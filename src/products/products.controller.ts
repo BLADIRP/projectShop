@@ -6,15 +6,14 @@ import {
   Patch,
   Param,
   Delete,
-  BadRequestException,
   Logger,
-  InternalServerErrorException,
   Query,
 } from '@nestjs/common';
 import { ProductsService } from './products.service';
 import { CreateProductDto } from './dto/create-product.dto';
 import { UpdateProductDto } from './dto/update-product.dto';
 import { PaginationDTO } from 'src/common/pagination.DTO';
+import { RangoDTO } from 'src/common/rango.DTO';
 
 @Controller('products')
 export class ProductsController {
@@ -27,19 +26,19 @@ export class ProductsController {
   }
 
   @Get()
-  findAll() {
-    return this.productsService.findAll();
+  findAll(@Query() paginationDTO: PaginationDTO) {
+    return this.productsService.findAll(paginationDTO);
   }
 
   @Get('/rang')
-  findRang(@Query() paginationDTO: PaginationDTO) {
-    return this.productsService.rango(paginationDTO);
+  findRang(@Body() rangoDTO: RangoDTO, @Query() paginationDTO: PaginationDTO) {
+    return this.productsService.rango(rangoDTO, paginationDTO);
   }
-  @Get()
+  @Get('/ordena')
   findNameAscDec(@Query() paginationDTO: PaginationDTO) {
     return this.productsService.findNamePrecioAscDec(paginationDTO);
   }
-  @Get(':term')
+  @Get('/term/:term')
   findOne(@Param('term') term: string) {
     return this.productsService.findOne(term);
   }

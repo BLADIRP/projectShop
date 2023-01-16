@@ -4,6 +4,7 @@ import { UpdateProductDto } from './dto/update-product.dto';
 import { ProductRepository } from './product.repository';
 import { InjectRepository } from '@nestjs/typeorm';
 import { PaginationDTO } from 'src/common/pagination.DTO';
+import { RangoDTO } from '../common/rango.DTO';
 
 @Injectable()
 export class ProductsService {
@@ -17,13 +18,16 @@ export class ProductsService {
     return product;
   }
 
-  async findAll() {
-    const products = this.productRepository.findAllProducts();
+  async findAll(paginationDTO: PaginationDTO) {
+    const products = this.productRepository.findAllProducts(paginationDTO);
     return products;
   }
 
-  async rango(paginationDTO: PaginationDTO) {
-    const productosRango = this.productRepository.findRang(paginationDTO);
+  async rango(rangoDTO: RangoDTO, paginationDTO: PaginationDTO) {
+    const productosRango = this.productRepository.findRang(
+      rangoDTO,
+      paginationDTO,
+    );
     return productosRango;
   }
 

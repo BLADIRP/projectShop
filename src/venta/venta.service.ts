@@ -39,7 +39,7 @@ export class VentaService {
 
   async remove(id: string) {
     const venta = this.ventaRepository.removeVenta(id);
-    return `Venta: ${(await venta).id} fue removida`;
+    return `Venta: ${(await venta).id} fue removid`;
   }
 
   handleDBExceptions(error: any) {

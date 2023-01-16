@@ -5,6 +5,12 @@ import { ProductsModule } from './products/products.module';
 import { CarritoModule } from './carrito/carrito.module';
 import { OperacionModule } from './operacion/operacion.module';
 import { VentaModule } from './venta/venta.module';
+import { ShopService } from './shop.service';
+import { ShopController } from './shop.controller';
+import { ProductRepository } from './products/product.repository';
+import { Respuesta } from './common/respuesta';
+import { CarritoRepository } from './carrito/carrito.repository';
+import { CarProductRepository } from './carrito/carrito_product.repository';
 
 @Module({
   imports: [
@@ -24,7 +30,13 @@ import { VentaModule } from './venta/venta.module';
     OperacionModule,
     VentaModule,
   ],
-  controllers: [],
-  providers: [],
+  controllers: [ShopController],
+  providers: [
+    ShopService,
+    ProductRepository,
+    Respuesta,
+    CarritoRepository,
+    CarProductRepository,
+  ],
 })
 export class AppModule {}

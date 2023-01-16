@@ -4,7 +4,7 @@ import {
   Column,
   Entity,
   JoinColumn,
-  OneToOne,
+  ManyToOne,
   PrimaryGeneratedColumn,
 } from 'typeorm';
 @Entity()
@@ -42,15 +42,17 @@ export class Operacion {
   Utilidad: number;
   //FK id carrito
 
-  @OneToOne(() => Carrito, (carrito) => carrito.operacion, {
+  @ManyToOne(() => Carrito, (carrito) => carrito.operacion, {
     cascade: true,
     eager: true,
   })
   @JoinColumn()
   carrito: Carrito;
 
-  @OneToOne(() => Venta, (venta) => venta.operacion, {
-    onDelete: 'CASCADE',
+  @ManyToOne(() => Venta, (venta) => venta.operacion, {
+    cascade: true,
+    eager: true,
   })
+  @JoinColumn()
   venta: Venta;
 }

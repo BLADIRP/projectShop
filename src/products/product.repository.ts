@@ -10,7 +10,7 @@ import { PaginationDTO } from 'src/common/pagination.DTO';
 import { isUUID } from 'class-validator';
 import { CreateProductDto } from './dto/create-product.dto';
 import { UpdateProductDto } from './dto/update-product.dto';
-import { ReturnDTO } from '../common/return.DTO';
+import { RangoDTO } from 'src/common/rango.DTO';
 
 @EntityRepository(Product)
 export class ProductRepository extends Repository<Product> {
@@ -33,16 +33,24 @@ export class ProductRepository extends Repository<Product> {
     }
   }
   //realiza la busqueda de todo los productos
-  async findAllProducts(): Promise<Array<Product>> {
-    const products = this.getProductRepository().find();
+  async findAllProducts(paginationDTO: PaginationDTO): Promise<Array<Product>> {
+    const { limit = 50, offset = 0 } = paginationDTO;
+    const products = await this.getProductRepository().find({
+      take: limit,
+      skip: offset,
+    });
     return products;
   }
   //realiza una busqueda de un rango de precios
-  async findRang(paginationDTO: PaginationDTO): Promise<Array<Product>> {
-    const { limit = 5, offset = 0 } = paginationDTO;
+  async findRang(
+    rangoDTO: RangoDTO,
+    paginationDTO: PaginationDTO,
+  ): Promise<Array<Product>> {
+    const { limit = 50, offset = 0 } = paginationDTO;
+    const { max, min } = rangoDTO;
     return await this.getProductRepository().find({
       where: {
-        PrecioCompra: Between(700, 720),
+        PrecioCompra: Between(min, max),
       },
       take: limit,
       skip: offset,
@@ -65,13 +73,13 @@ export class ProductRepository extends Repository<Product> {
     let products;
     if (paginationDTO.term == 'nombre') {
       products = await this.ordenNombre(paginationDTO);
-      return this.ok(products);
+      return products;
     }
     if (paginationDTO.term == 'precio') {
       products = await this.ordenPrecio(paginationDTO);
-      return this.ok(products);
+      return products;
     } else {
-      return this.noOk();
+      return (products = null);
     }
   }
   // realiza la actualizacion del product
@@ -108,7 +116,7 @@ export class ProductRepository extends Repository<Product> {
   }
 
   async ordenNombre(paginationDTO: PaginationDTO): Promise<Array<Product>> {
-    const { limit = 100, offset = 0, ordena, term } = paginationDTO;
+    const { limit = 50, offset = 0, ordena, term } = paginationDTO;
     let products;
     if (term == 'nombre') {
       products = await this.getProductRepository().find({
@@ -124,7 +132,7 @@ export class ProductRepository extends Repository<Product> {
   }
 
   async ordenPrecio(paginationDTO: PaginationDTO): Promise<Array<Product>> {
-    const { limit = 100, offset = 0, term, ordena } = paginationDTO;
+    const { limit = 50, offset = 0, term, ordena } = paginationDTO;
     let products;
     if (term == 'precio') {
       products = await this.getProductRepository().find({
@@ -136,23 +144,5 @@ export class ProductRepository extends Repository<Product> {
       });
     }
     return products;
-  }
-
-  ok(products: Array<Product>): ReturnDTO<Array<Product>> {
-    return new ReturnDTO(
-      'Datos recuperados correctamente',
-      'ok',
-      products,
-      new Date(),
-    );
-  }
-
-  noOk(): ReturnDTO<any> {
-    return new ReturnDTO(
-      'Datos no recuperados',
-      'bad request',
-      null,
-      new Date(),
-    );
   }
 }

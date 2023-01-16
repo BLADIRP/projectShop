@@ -1,12 +1,11 @@
-import { Product } from 'src/products/entities/product.entity';
-import { ReturnDTO } from '../common/return.DTO';
+import { ReturnDTO } from './return.DTO';
 
-export class RespProduct {
-  ok(products: Array<Product>): ReturnDTO<Array<Product>> {
+export class Respuesta {
+  ok(data: any): ReturnDTO<any> {
     return new ReturnDTO(
       'Datos recuperados correctamente',
       'ok',
-      products,
+      data,
       new Date(),
     );
   }

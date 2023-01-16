@@ -11,12 +11,15 @@ export class CreateCarritoDto {
   @IsString()
   @MinLength(1)
   nombre: string;
+
   @IsBoolean()
   estado: boolean;
+
   @IsDate()
   @Type(() => Date)
   @IsOptional()
   TimeCreacion: Date;
+
   @IsDate()
   @Type(() => Date)
   @IsOptional()
