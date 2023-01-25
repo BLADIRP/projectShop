@@ -6,7 +6,7 @@ import {
 } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { VentaRepository } from './venta.repository';
-import { CreateVentaDto } from './dto/create-venta.dto';
+import { CreateSaleDto } from './dto/create-venta.dto';
 import { UpdateVentaDto } from './dto/update-venta.dto';
 
 @Injectable()
@@ -17,8 +17,8 @@ export class VentaService {
     private ventaRepository: VentaRepository,
   ) {}
 
-  async create(createVentaDto: CreateVentaDto) {
-    const venta = this.ventaRepository.createVenta(createVentaDto);
+  async create(createSaleDto: CreateSaleDto) {
+    const venta = this.ventaRepository.createSale(createSaleDto);
     return venta;
   }
 

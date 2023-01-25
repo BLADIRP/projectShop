@@ -4,10 +4,10 @@ import {
   InternalServerErrorException,
   Logger,
 } from '@nestjs/common';
-import { CreateCarritoDto } from './dto/create-carrito.dto';
-import { UpdateCarritoDto } from './dto/update-carrito.dto';
+import { UpdateCartDto } from './dto/update-carrito.dto';
 import { InjectRepository } from '@nestjs/typeorm';
 import { CarritoRepository } from './carrito.repository';
+import { CreateCartDto } from './dto/create-carrito.dto';
 
 @Injectable()
 export class CarritoService {
@@ -17,8 +17,8 @@ export class CarritoService {
     private carritoRepository: CarritoRepository,
   ) {}
 
-  async create(createCarritoDto: CreateCarritoDto) {
-    const carrito = this.carritoRepository.createCarrito(createCarritoDto);
+  async create(createCartDto: CreateCartDto) {
+    const carrito = this.carritoRepository.createCart(createCartDto);
     return carrito;
   }
 
@@ -28,12 +28,12 @@ export class CarritoService {
   }
 
   async findOne(id: string) {
-    const carrito = this.carritoRepository.findCarrito(id);
+    const carrito = this.carritoRepository.findCart(id);
     return carrito;
   }
 
-  async update(id: string, updateCarritoDto: UpdateCarritoDto) {
-    const carrito = this.carritoRepository.updateCarrito(id, updateCarritoDto);
+  async update(id: string, updateCarritoDto: UpdateCartDto) {
+    const carrito = this.carritoRepository.updateCart(id, updateCarritoDto);
     return carrito;
   }
 

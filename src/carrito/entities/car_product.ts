@@ -6,27 +6,26 @@ import {
   Column,
 } from 'typeorm';
 import { Product } from '../../products/entities/product.entity';
-import { Carrito } from './carrito.entity';
-
+import { Cart } from './carrito.entity';
 @Entity()
-export class Car_Product {
+export class Cart_Product {
   @PrimaryGeneratedColumn('uuid')
   id: string;
 
-  @ManyToOne(() => Product, (product) => product.car_product, {
+  @ManyToOne(() => Product, (product) => product.cart_product, {
     onDelete: 'CASCADE',
   })
   @JoinColumn()
   product: Product;
 
-  @ManyToOne(() => Carrito, (carrito) => carrito.car_product, {
+  @ManyToOne(() => Cart, (cart) => cart.cart_product, {
     onDelete: 'CASCADE',
   })
   @JoinColumn()
-  carrito: Carrito;
+  cart: Cart;
 
   @Column('int', {
-    default: 0,
+    default: 1,
   })
-  cantidad: number;
+  amount: number;
 }

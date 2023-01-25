@@ -7,28 +7,44 @@ import {
   Min,
   MinLength,
 } from 'class-validator';
-export class CreateOperacionDto {
+export class CreateTransactionDTO {
   @IsString()
   @IsOptional()
   @MinLength(1)
   description: string;
+
   @IsNumber()
   @IsPositive()
-  CantidadProducto: number;
+  quantityProducts: number;
+
   @IsNumber()
   @IsPositive()
-  PrecioVenta: number;
+  salePrice: number;
+
   @IsNumber()
   @Min(0)
   @Max(100)
-  Descuento: number;
+  discount: number;
+
   @IsNumber()
   @IsPositive()
-  Total: number;
+  total: number;
+
   @IsNumber()
   @IsPositive()
-  PrecioCompra: number;
+  purchasePrice: number;
+
   @IsNumber()
   @IsPositive()
-  Utilidad: number;
+  utility: number;
+
+  @IsString()
+  @IsOptional()
+  @MinLength(1)
+  cartId: string;
+
+  @IsString()
+  @IsOptional()
+  @MinLength(1)
+  saleId: string;
 }

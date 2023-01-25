@@ -1,15 +1,24 @@
-import { IsNumber, IsOptional, IsString, MinLength } from 'class-validator';
+import {
+  IsNumber,
+  IsOptional,
+  IsPositive,
+  IsString,
+  MinLength,
+} from 'class-validator';
 
 export class AddProductDto {
   @IsString()
   @MinLength(1)
-  fkProduct: string;
+  @IsOptional()
+  productId: string;
 
   @IsString()
   @MinLength(1)
-  fkCar: string;
+  @IsOptional()
+  cartId: string;
 
   @IsNumber()
   @IsOptional()
-  cantidad?: number;
+  @IsPositive()
+  amount?: number;
 }

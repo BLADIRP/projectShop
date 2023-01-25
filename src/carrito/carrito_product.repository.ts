@@ -1,50 +1,63 @@
 import { EntityRepository, Repository, getRepository } from 'typeorm';
-import { Car_Product } from './entities/car_product';
-import {
-  BadRequestException,
-  InternalServerErrorException,
-  Logger,
-  NotFoundException,
-} from '@nestjs/common';
+import { Cart_Product } from './entities/car_product';
+import { BadRequestException, Logger, NotFoundException } from '@nestjs/common';
 import { AddProductDto } from './dto/create-car_product.dto';
 import { isUUID } from 'class-validator';
 import { UpdateAddProductDto } from './dto/update-car_product.dto';
-
-@EntityRepository(Car_Product)
-export class CarProductRepository extends Repository<Car_Product> {
+import { Cart } from './entities/carrito.entity';
+import { Product } from '../products/entities/product.entity';
+import { Response } from '../common/respuesta';
+@EntityRepository(Cart_Product)
+export class CarProductRepository extends Repository<Cart_Product> {
   private logger = new Logger('ProductCarritoRepository');
 
   getCarProductRepository() {
-    return getRepository(Car_Product);
+    return getRepository(Cart_Product);
   }
 
-  async addProduct(addProductDto: AddProductDto): Promise<Car_Product> {
+  async addProduct(addProductDto: AddProductDto): Promise<Cart_Product> {
+    const { cartId, productId, amount } = addProductDto;
     try {
-      console.log(`estoy aqui bladi`);
-      console.log(addProductDto);
-      addProductDto = { fkCar: 'A', fkProduct: 'B', cantidad: 1 };
-      console.log(addProductDto);
-      const product = this.getCarProductRepository().create(addProductDto);
-      console.log(product);
-      await this.getCarProductRepository().save(product);
-      return product;
+      const cart = new Cart();
+      cart.id = cartId;
+      const product = new Product();
+      product.id = productId;
+      const addProduct: Cart_Product = {
+        id: undefined,
+        cart,
+        product,
+        amount,
+      };
+      return await this.getCarProductRepository().save(addProduct);
     } catch (error) {
       this.handleDBExceptions(error);
     }
   }
 
-  async findCarrito(id: string): Promise<Car_Product> {
-    let carrito: Car_Product;
+  async findCarProduct(id: string): Promise<Cart_Product> {
+    let carrito: Cart_Product;
     if (isUUID(id))
       carrito = await this.getCarProductRepository().findOne({ id: id });
     if (!carrito) throw new NotFoundException(`id : ${id} not found`);
     return carrito;
   }
 
+  async findCart(idCar: string): Promise<Array<Cart_Product>> {
+    if (isUUID(idCar)) {
+      const cart = await this.getCarProductRepository().find({
+        where: { cart: idCar },
+        relations: ['cart', 'product'],
+      });
+      return cart;
+    } else {
+      throw new NotFoundException(`id : ${idCar} not found`);
+    }
+  }
+
   async updateProduct(
     id: string,
     updateAddProductDto: UpdateAddProductDto,
-  ): Promise<Car_Product> {
+  ): Promise<Cart_Product | Response> {
     const updateProduct = await this.getCarProductRepository().preload({
       id: id,
       ...updateAddProductDto,
@@ -55,31 +68,29 @@ export class CarProductRepository extends Repository<Car_Product> {
     try {
       return updateProduct;
     } catch (error) {
-      this.handleDBExceptions(error);
+      return this.handleDBExceptions(error);
     }
   }
 
-  async removeProduct(id: string): Promise<Car_Product> {
-    const product = await this.findCarrito(id);
+  async removeProduct(id: string): Promise<Cart_Product> {
+    const product = await this.findCarProduct(id);
     this.getCarProductRepository().remove(product);
     return product;
   }
 
-  handleDBExceptions(error: any) {
+  handleDBExceptions(error: any): Response {
     if (error.code == '23505') throw new BadRequestException(error.detail);
     this.logger.error(error);
-    throw new InternalServerErrorException(
-      'Unexpected error, check server logs',
-    );
+    return Response.isError('Error iunseperado este id ya exixste');
   }
 
-  async findProduct(id: string): Promise<Array<Car_Product>> {
-    let product: Car_Product[];
+  async findProduct(id: string): Promise<Cart_Product> {
+    let product: Cart_Product;
     if (isUUID(id))
-      product = await this.getCarProductRepository().find({
-        where: { carrito: id },
+      product = await this.getCarProductRepository().findOne({
+        where: { product: id },
+        relations: ['cart', 'product'],
       });
-    if (!product) throw new NotFoundException(`id : ${id} not found`);
     return product;
   }
 }

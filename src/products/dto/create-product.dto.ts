@@ -1,9 +1,11 @@
 import {
   IsInt,
+  IsLowercase,
   IsNumber,
   IsOptional,
   IsPositive,
   IsString,
+  IsUppercase,
   MinLength,
 } from 'class-validator';
 
@@ -11,18 +13,27 @@ import {
 export class CreateProductDto {
   @IsString()
   @MinLength(1)
-  nombre: string;
+  @IsLowercase()
+  name: string;
+
+  @IsString()
+  @MinLength(1)
+  @IsUppercase()
+  key: string;
+
   @IsNumber()
   @IsPositive()
-  @IsOptional()
-  PrecioVenta: number;
+  salePrice: number;
+
   @IsNumber()
   @IsPositive()
-  PrecioCompra: number;
+  purchasePrice: number;
+
   @IsInt()
   @IsPositive()
   @IsOptional()
   stock: number;
+
   @IsString()
   @MinLength(1)
   @IsOptional()

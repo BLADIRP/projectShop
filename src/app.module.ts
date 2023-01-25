@@ -8,9 +8,13 @@ import { VentaModule } from './venta/venta.module';
 import { ShopService } from './shop.service';
 import { ShopController } from './shop.controller';
 import { ProductRepository } from './products/product.repository';
-import { Respuesta } from './common/respuesta';
+import { Response } from './common/respuesta';
 import { CarritoRepository } from './carrito/carrito.repository';
 import { CarProductRepository } from './carrito/carrito_product.repository';
+import { OperacionRepository } from './operacion/operacion.repository';
+import { VentaRepository } from './venta/venta.repository';
+import { Currency } from './discounts/interfaces/impl/discount.services.amount.impl';
+import { Percentage } from './discounts/interfaces/impl/discount.services.perecentage.impl';
 
 @Module({
   imports: [
@@ -24,6 +28,7 @@ import { CarProductRepository } from './carrito/carrito_product.repository';
       password: process.env.DB_PASSWORD,
       autoLoadEntities: true,
       synchronize: true, //usualmente no se usa en produccion
+      //logging: 'all',
     }),
     ProductsModule,
     CarritoModule,
@@ -34,9 +39,14 @@ import { CarProductRepository } from './carrito/carrito_product.repository';
   providers: [
     ShopService,
     ProductRepository,
-    Respuesta,
+    Response,
     CarritoRepository,
     CarProductRepository,
+    OperacionRepository,
+    VentaRepository,
+    Currency,
+    Percentage,
   ],
+  exports: [Percentage, Currency],
 })
 export class AppModule {}

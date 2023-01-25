@@ -7,21 +7,22 @@ import {
   MinLength,
 } from 'class-validator';
 
-export class CreateCarritoDto {
+export class CreateCartDto {
   @IsString()
   @MinLength(1)
-  nombre: string;
+  name: string;
 
   @IsBoolean()
-  estado: boolean;
+  @IsOptional()
+  state: boolean;
 
   @IsDate()
   @Type(() => Date)
   @IsOptional()
-  TimeCreacion: Date;
+  creationTime: Date;
 
   @IsDate()
   @Type(() => Date)
   @IsOptional()
-  TimeCompra: Date;
+  purchaseTime: Date;
 }

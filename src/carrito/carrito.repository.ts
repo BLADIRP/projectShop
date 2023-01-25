@@ -1,65 +1,63 @@
 import { EntityRepository, Repository, getRepository } from 'typeorm';
-import { Carrito } from './entities/carrito.entity';
+import { Cart } from './entities/carrito.entity';
 import {
   BadRequestException,
   InternalServerErrorException,
   Logger,
   NotFoundException,
 } from '@nestjs/common';
-import { CreateCarritoDto } from './dto/create-carrito.dto';
 import { isUUID } from 'class-validator';
-import { UpdateCarritoDto } from './dto/update-carrito.dto';
+import { UpdateCartDto } from './dto/update-carrito.dto';
+import { CreateCartDto } from './dto/create-carrito.dto';
 
-@EntityRepository(Carrito)
-export class CarritoRepository extends Repository<Carrito> {
+@EntityRepository(Cart)
+export class CarritoRepository extends Repository<Cart> {
   private logger = new Logger('CarritoRepository');
 
   getCarritoRepository() {
-    return getRepository(Carrito);
+    return getRepository(Cart);
   }
 
-  async createCarrito(createCarritoDto: CreateCarritoDto): Promise<Carrito> {
+  async createCart(createCartDto: CreateCartDto): Promise<Cart> {
     try {
-      const carrito = this.getCarritoRepository().create(createCarritoDto);
-      await this.getCarritoRepository().save(carrito);
-      return carrito;
+      const cart = this.getCarritoRepository().create(createCartDto);
+      await this.getCarritoRepository().save(cart);
+      return cart;
     } catch (error) {
       this.handleDBExceptions(error);
     }
   }
-  async findAllCarritos(): Promise<Array<Carrito>> {
+
+  async findAllCarritos(): Promise<Array<Cart>> {
     const carritos = this.getCarritoRepository().find();
     return carritos;
   }
 
-  async findCarrito(id: string): Promise<Carrito> {
-    let carrito: Carrito;
+  async findCart(id: string): Promise<Cart> {
+    let cart: Cart;
     if (isUUID(id))
-      carrito = await this.getCarritoRepository().findOne({ id: id });
-    if (!carrito) throw new NotFoundException(`id : ${id} not found`);
-    return carrito;
+      cart = await this.getCarritoRepository().findOne({ id: id });
+    if (!cart) throw new NotFoundException(`id : ${id} not found`);
+    return cart;
   }
 
-  async updateCarrito(
-    id: string,
-    updateCarritoDto: UpdateCarritoDto,
-  ): Promise<Carrito> {
-    const updateCarrito = await this.getCarritoRepository().preload({
+  async updateCart(id: string, updateCartDto: UpdateCartDto): Promise<Cart> {
+    const updateCart = await this.getCarritoRepository().preload({
       id: id,
-      ...updateCarritoDto,
+      ...updateCartDto,
     });
-    if (!updateCarrito)
+    if (!updateCart)
       throw new NotFoundException(`Product when id: ${id} not found `);
-    await this.getCarritoRepository().save(updateCarrito);
+    await this.getCarritoRepository().save(updateCart);
     try {
-      return updateCarrito;
+      return updateCart;
     } catch (error) {
       this.handleDBExceptions(error);
     }
   }
 
-  async removeCarrito(id: string): Promise<Carrito> {
-    const carrito = await this.findCarrito(id);
+  async removeCarrito(id: string): Promise<Cart> {
+    const carrito = await this.findCart(id);
     this.getCarritoRepository().remove(carrito);
     return carrito;
   }

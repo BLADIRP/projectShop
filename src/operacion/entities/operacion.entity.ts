@@ -1,5 +1,5 @@
-import { Carrito } from 'src/carrito/entities/carrito.entity';
-import { Venta } from '../../venta/entities/venta.entity';
+import { Cart } from 'src/carrito/entities/carrito.entity';
+import { Sale } from '../../venta/entities/venta.entity';
 import {
   Column,
   Entity,
@@ -8,51 +8,55 @@ import {
   PrimaryGeneratedColumn,
 } from 'typeorm';
 @Entity()
-export class Operacion {
+export class Transaction {
   @PrimaryGeneratedColumn('uuid')
   id: string;
+
   @Column({
     type: 'text',
     nullable: true,
   })
   description: string;
+
   @Column('int', {
     default: 0,
   })
-  CantidadProducto: number;
+  quantityProducts: number;
+
   @Column('float', {
     default: 0,
   })
-  PrecioVenta: number;
+  salePrice: number;
+
   @Column('float', {
     default: 0,
   })
-  Descuento: number;
+  discount: number;
+
   @Column('float', {
     default: 0,
   })
-  Total: number;
+  total: number;
+
   @Column('float', {
     default: 0,
   })
-  PrecioCompra: number;
+  purchasePrice: number;
+
   @Column('float', {
     default: 0,
   })
   Utilidad: number;
   //FK id carrito
 
-  @ManyToOne(() => Carrito, (carrito) => carrito.operacion, {
-    cascade: true,
-    eager: true,
-  })
+  @ManyToOne(() => Cart, (cart) => cart.transaction)
   @JoinColumn()
-  carrito: Carrito;
+  cart: Cart;
 
-  @ManyToOne(() => Venta, (venta) => venta.operacion, {
+  @ManyToOne(() => Sale, (sale) => sale.transaction, {
     cascade: true,
     eager: true,
   })
   @JoinColumn()
-  venta: Venta;
+  sale: Sale;
 }

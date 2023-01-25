@@ -34,10 +34,74 @@ export class ProductRepository extends Repository<Product> {
   }
   //realiza la busqueda de todo los productos
   async findAllProducts(paginationDTO: PaginationDTO): Promise<Array<Product>> {
-    const { limit = 50, offset = 0 } = paginationDTO;
+    const { max, min, clave, nombre } = paginationDTO;
+    const { term, ordena, offset, limit, ...toPagination } = paginationDTO;
+    if (clave !== undefined) {
+      const products = await this.getProductRepository().find({
+        where: {
+          clave,
+        },
+      });
+      return products;
+    }
+
+    if (nombre !== undefined) {
+      const products = await this.getProductRepository().find({
+        where: {
+          nombre: nombre,
+        },
+      });
+      return products;
+    }
+
+    if (min !== undefined && max !== undefined) {
+      const products = await this.getProductRepository().find({
+        where: {
+          salePrice: Between(min, max),
+        },
+        order: { salePrice: ordena },
+        take: limit,
+        skip: offset,
+      });
+      return products;
+    }
+    if (min !== undefined && max !== undefined && term == 'nombre') {
+      const products = await this.getProductRepository().find({
+        where: {
+          salePrice: Between(min, max),
+        },
+        order: { name: ordena },
+        take: limit,
+        skip: offset,
+      });
+      return products;
+    }
+    if (toPagination && term == 'nombre') {
+      const products = await this.getProductRepository().find({
+        order: { name: ordena },
+        take: limit,
+        skip: offset,
+      });
+      return products;
+    }
+
+    if (toPagination && term == 'precio') {
+      const products = await this.getProductRepository().find({
+        order: { salePrice: ordena },
+        take: limit,
+        skip: offset,
+      });
+      return products;
+    } else {
+      const products = await this.getProductRepository().find();
+      return products;
+    }
+  }
+  async findById(id: string): Promise<Array<Product>> {
     const products = await this.getProductRepository().find({
-      take: limit,
-      skip: offset,
+      where: {
+        id,
+      },
     });
     return products;
   }
@@ -62,7 +126,7 @@ export class ProductRepository extends Repository<Product> {
     if (isUUID(term)) {
       product = await this.getProductRepository().findOne({ id: term });
     } else {
-      product = await this.getProductRepository().findOne({ nombre: term });
+      product = await this.getProductRepository().findOne({ name: term });
     }
     if (!product) throw new NotFoundException(`id : ${term} not found`);
     return product;
@@ -102,9 +166,9 @@ export class ProductRepository extends Repository<Product> {
   }
   //Realiza la eliminacion de un producto
   async removeProduct(id: string): Promise<Product> {
-    const product = await this.findProduct(id);
+    const product = await this.findById(id);
     this.getProductRepository().remove(product);
-    return product;
+    return product[1];
   }
   //funcion para manejar el error
   handleDBExceptions(error: any) {
@@ -121,7 +185,7 @@ export class ProductRepository extends Repository<Product> {
     if (term == 'nombre') {
       products = await this.getProductRepository().find({
         order: {
-          nombre: ordena,
+          name: ordena,
         },
         take: limit,
         skip: offset,
@@ -137,7 +201,7 @@ export class ProductRepository extends Repository<Product> {
     if (term == 'precio') {
       products = await this.getProductRepository().find({
         order: {
-          PrecioCompra: ordena,
+          purchasePrice: ordena,
         },
         take: limit,
         skip: offset,

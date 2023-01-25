@@ -4,45 +4,42 @@ import {
   Logger,
   NotFoundException,
 } from '@nestjs/common';
-import { Venta } from './entities/venta.entity';
+import { Sale } from './entities/venta.entity';
 import { EntityRepository, Repository, getRepository } from 'typeorm';
-import { CreateVentaDto } from './dto/create-venta.dto';
+import { CreateSaleDto } from './dto/create-venta.dto';
 import { isUUID } from 'class-validator';
 import { UpdateVentaDto } from './dto/update-venta.dto';
 
-@EntityRepository(Venta)
-export class VentaRepository extends Repository<Venta> {
+@EntityRepository(Sale)
+export class VentaRepository extends Repository<Sale> {
   private logger = new Logger('CarritoRepository');
 
   getVentaRepository() {
-    return getRepository(Venta);
+    return getRepository(Sale);
   }
 
-  async createVenta(createVentaDto: CreateVentaDto): Promise<Venta> {
+  async createSale(createSaleDto: CreateSaleDto): Promise<Sale> {
     try {
-      const venta = this.getVentaRepository().create(createVentaDto);
+      const venta = this.getVentaRepository().create(createSaleDto);
       await this.getVentaRepository().save(venta);
       return venta;
     } catch (error) {
       this.handleDBExceptions(error);
     }
   }
-  async findAllVentas(): Promise<Array<Venta>> {
+  async findAllVentas(): Promise<Array<Sale>> {
     const ventas = this.getVentaRepository().find();
     return ventas;
   }
 
-  async findVenta(id: string): Promise<Venta> {
-    let venta: Venta;
+  async findVenta(id: string): Promise<Sale> {
+    let venta: Sale;
     if (isUUID(id)) venta = await this.getVentaRepository().findOne({ id: id });
     if (!venta) throw new NotFoundException(`id : ${id} not found`);
     return venta;
   }
 
-  async updateVenta(
-    id: string,
-    updateVentaDto: UpdateVentaDto,
-  ): Promise<Venta> {
+  async updateVenta(id: string, updateVentaDto: UpdateVentaDto): Promise<Sale> {
     const updateVenta = await this.getVentaRepository().preload({
       id: id,
       ...updateVentaDto,
@@ -57,7 +54,7 @@ export class VentaRepository extends Repository<Venta> {
     }
   }
 
-  async removeVenta(id: string): Promise<Venta> {
+  async removeVenta(id: string): Promise<Sale> {
     const venta = await this.findVenta(id);
     this.getVentaRepository().remove(venta);
     return venta;

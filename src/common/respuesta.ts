@@ -1,18 +1,18 @@
 import { ReturnDTO } from './return.DTO';
 
-export class Respuesta {
-  ok(data: any): ReturnDTO<any> {
+export class Response {
+  static ok(data: any, message?: string): ReturnDTO<any> {
     return new ReturnDTO(
-      'Datos recuperados correctamente',
+      message ? message : 'Datos recuperados correctamente',
       'ok',
       data,
       new Date(),
     );
   }
 
-  noOk(): ReturnDTO<any> {
+  static isError(error?: string): ReturnDTO<any> {
     return new ReturnDTO(
-      'Datos no recuperados',
+      error ? error : 'Datos no recuperados',
       'bad request',
       null,
       new Date(),

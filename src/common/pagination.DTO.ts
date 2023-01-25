@@ -1,10 +1,11 @@
 import { Type } from 'class-transformer';
-import { IsOptional, IsPositive } from 'class-validator';
+import { IsOptional, IsPositive, Max } from 'class-validator';
 import { OrdenDTO } from './Orden.DTO';
 
 export class PaginationDTO extends OrdenDTO {
   @IsOptional()
   @IsPositive()
+  @Max(50)
   @Type(() => Number)
   limit?: number;
 

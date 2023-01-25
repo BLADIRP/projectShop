@@ -1,14 +1,18 @@
 import { Type } from 'class-transformer';
-import { IsDate, IsNumber, IsPositive } from 'class-validator';
+import { IsDate, IsNumber, IsOptional, IsPositive } from 'class-validator';
 
-export class CreateVentaDto {
+export class CreateSaleDto {
   @IsDate()
   @Type(() => Date)
-  Time: Date;
+  time: Date;
+
   @IsNumber()
   @IsPositive()
-  TotalOperacion: number;
+  @IsOptional()
+  totalTransaction: number;
+
   @IsNumber()
   @IsPositive()
-  TotalProductos: number;
+  @IsOptional()
+  totalProducts: number;
 }

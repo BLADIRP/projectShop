@@ -6,8 +6,8 @@ import {
 } from '@nestjs/common';
 import { OperacionRepository } from './operacion.repository';
 import { InjectRepository } from '@nestjs/typeorm';
-import { CreateOperacionDto } from './dto/create-operacion.dto';
-import { UpdateOperacionDto } from './dto/update-operacion.dto';
+import { CreateTransactionDTO } from './dto/create-operacion.dto';
+import { UpdateTransactionDto } from './dto/update-operacion.dto';
 
 @Injectable()
 export class OperacionService {
@@ -17,14 +17,14 @@ export class OperacionService {
     private operacionRepository: OperacionRepository,
   ) {}
 
-  async create(createOperacionDto: CreateOperacionDto) {
+  async create(createTransactionDTO: CreateTransactionDTO) {
     const operacion =
-      this.operacionRepository.createOperacion(createOperacionDto);
+      this.operacionRepository.createOperacion(createTransactionDTO);
     return operacion;
   }
 
   async findAll() {
-    const operacion = this.operacionRepository.findAllOperaciones();
+    const operacion = this.operacionRepository.findAllOperaciones('A');
     return operacion;
   }
 
@@ -33,10 +33,10 @@ export class OperacionService {
     return operacion;
   }
 
-  async update(id: string, updateOperacionDto: UpdateOperacionDto) {
+  async update(id: string, updateTransactionDto: UpdateTransactionDto) {
     const operacion = this.operacionRepository.updateOperacion(
       id,
-      updateOperacionDto,
+      updateTransactionDto,
     );
     return operacion;
   }

@@ -1,23 +1,26 @@
 import { Column, Entity, OneToMany, PrimaryGeneratedColumn } from 'typeorm';
-import { Operacion } from '../../operacion/entities/operacion.entity';
+import { Transaction } from '../../operacion/entities/operacion.entity';
 
 @Entity()
-export class Venta {
+export class Sale {
   @PrimaryGeneratedColumn('uuid')
   id: string;
+
   @Column('date', { default: null })
-  Time: Date;
-  @Column('float', {
-    default: 0,
-  })
-  TotalOperacion: number;
+  time: Date;
+
   @Column('int', {
     default: 0,
   })
-  TotalProductos: number;
+  totalTransaction: number;
 
-  @OneToMany(() => Operacion, (operacion) => operacion.venta, {
+  @Column('int', {
+    default: 0,
+  })
+  totalProducts: number;
+
+  @OneToMany(() => Transaction, (transaction) => transaction.sale, {
     onDelete: 'CASCADE',
   })
-  operacion: Operacion;
+  transaction: Transaction;
 }

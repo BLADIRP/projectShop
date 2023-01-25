@@ -1,32 +1,29 @@
 import { Column, Entity, OneToMany, PrimaryGeneratedColumn } from 'typeorm';
-import { Operacion } from '../../operacion/entities/operacion.entity';
-import { Car_Product } from './car_product';
+import { Transaction } from '../../operacion/entities/operacion.entity';
+import { Cart_Product } from './car_product';
 
 @Entity()
-export class Carrito {
+export class Cart {
   @PrimaryGeneratedColumn('uuid')
   id: string;
 
   @Column('text', { unique: true })
-  nombre: string;
+  name: string;
 
   @Column('bool', { default: false })
-  estado: boolean;
+  state: boolean;
 
   @Column('date', { default: null })
-  TimeCreacion: Date;
+  creationTime: Date;
 
   @Column('date', { default: null })
-  TimeCompra: Date;
+  purchaseTime: Date;
 
-  @OneToMany(() => Operacion, (operacion) => operacion.carrito, {
+  @OneToMany(() => Transaction, (transaction) => transaction.cart, {
     onDelete: 'CASCADE',
   })
-  operacion: Operacion;
+  transaction: Transaction;
 
-  @OneToMany(() => Car_Product, (car_product) => car_product.carrito, {
-    cascade: true,
-    eager: true,
-  })
-  car_product: Car_Product;
+  @OneToMany(() => Cart_Product, (cart_product) => cart_product.cart)
+  cart_product: Cart_Product;
 }

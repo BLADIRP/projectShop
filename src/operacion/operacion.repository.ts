@@ -1,43 +1,80 @@
 import { EntityRepository, Repository, getRepository } from 'typeorm';
-import { Operacion } from './entities/operacion.entity';
+import { Transaction } from './entities/operacion.entity';
 import {
   BadRequestException,
   InternalServerErrorException,
   Logger,
   NotFoundException,
 } from '@nestjs/common';
-import { CreateOperacionDto } from './dto/create-operacion.dto';
+import { CreateTransactionDTO } from './dto/create-operacion.dto';
 import { isUUID } from 'class-validator';
-import { UpdateOperacionDto } from './dto/update-operacion.dto';
+import { UpdateTransactionDto } from './dto/update-operacion.dto';
+import { Cart } from '../carrito/entities/carrito.entity';
+import { Sale } from '../venta/entities/venta.entity';
 
-@EntityRepository(Operacion)
-export class OperacionRepository extends Repository<Operacion> {
+@EntityRepository(Transaction)
+export class OperacionRepository extends Repository<Transaction> {
   private logger = new Logger('OperacionRepository');
 
   getOperacionRepository() {
-    return getRepository(Operacion);
+    return getRepository(Transaction);
   }
 
   async createOperacion(
-    createOperacionDto: CreateOperacionDto,
-  ): Promise<Operacion> {
+    createTransactionDTO: CreateTransactionDTO,
+  ): Promise<Transaction> {
     try {
-      const operacion =
-        this.getOperacionRepository().create(createOperacionDto);
-      await this.getOperacionRepository().save(operacion);
+      const carrito: Cart = {
+        id: createTransactionDTO.cartId,
+        name: undefined,
+        state: undefined,
+        purchaseTime: undefined,
+        creationTime: undefined,
+        transaction: undefined,
+        cart_product: undefined,
+      };
+
+      const sale: Sale = {
+        id: createTransactionDTO.saleId,
+        time: undefined,
+        totalProducts: undefined,
+        totalTransaction: undefined,
+        transaction: undefined,
+      };
+
+      const creatOperacion: Transaction = {
+        id: undefined,
+        description: createTransactionDTO.description,
+        quantityProducts: createTransactionDTO.quantityProducts,
+        salePrice: createTransactionDTO.purchasePrice,
+        discount: createTransactionDTO.discount,
+        total: createTransactionDTO.total,
+        purchasePrice: createTransactionDTO.salePrice,
+        Utilidad: createTransactionDTO.utility,
+        cart: carrito,
+        sale: sale,
+      };
+      const operacion = await this.getOperacionRepository().save(
+        creatOperacion,
+      );
       return operacion;
     } catch (error) {
       this.handleDBExceptions(error);
     }
   }
-  async findAllOperaciones(): Promise<Array<Operacion>> {
-    const operaciones = this.getOperacionRepository().find();
+  async findAllOperaciones(id: string): Promise<Array<Transaction>> {
+    const operaciones = this.getOperacionRepository().find({
+      where: { carrito: id },
+      loadRelationIds: {
+        relations: ['carrito'],
+      },
+    });
     return operaciones;
   }
 
-  async findOperacion(id: string): Promise<Operacion> {
+  async findOperacion(id: string): Promise<Transaction> {
     console.log(`hola estoy aqui`);
-    let operacion: Operacion;
+    let operacion: Transaction;
     if (isUUID(id))
       operacion = await this.getOperacionRepository().findOne({ id: id });
     if (!operacion) throw new NotFoundException(`id : ${id} not found`);
@@ -46,11 +83,11 @@ export class OperacionRepository extends Repository<Operacion> {
 
   async updateOperacion(
     id: string,
-    updateOperacionDto: UpdateOperacionDto,
-  ): Promise<Operacion> {
+    updateTransactionDto: UpdateTransactionDto,
+  ): Promise<Transaction> {
     const updateOperacion = await this.getOperacionRepository().preload({
       id: id,
-      ...updateOperacionDto,
+      ...updateTransactionDto,
     });
     if (!updateOperacion)
       throw new NotFoundException(`Product when id: ${id} not found `);
@@ -62,7 +99,7 @@ export class OperacionRepository extends Repository<Operacion> {
     }
   }
 
-  async removeOperacion(id: string): Promise<Operacion> {
+  async removeOperacion(id: string): Promise<Transaction> {
     const operacion = await this.findOperacion(id);
     this.getOperacionRepository().remove(operacion);
     return operacion;
@@ -74,5 +111,19 @@ export class OperacionRepository extends Repository<Operacion> {
     throw new InternalServerErrorException(
       'Unexpected error, check server logs',
     );
+  }
+
+  async findOperacionBySaleId(idSale: string): Promise<Array<Transaction>> {
+    let operacion: Transaction[];
+    if (isUUID(idSale)) {
+      operacion = await this.getOperacionRepository().find({
+        where: { sale: idSale },
+        loadRelationIds: { relations: ['cart', 'sale'] },
+      });
+    }
+    console.log(operacion);
+    if (operacion.length == 0)
+      throw new NotFoundException(`id : ${idSale} not found`);
+    return operacion;
   }
 }

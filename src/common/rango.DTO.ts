@@ -1,12 +1,15 @@
 import { Type } from 'class-transformer';
-import { IsInt } from 'class-validator';
+import { IsInt, IsOptional } from 'class-validator';
+import { TermDTO } from './term.DTO';
 
-export class RangoDTO {
+export class RangoDTO extends TermDTO {
   @IsInt()
   @Type(() => Number)
-  max: number;
+  @IsOptional()
+  max?: number;
 
   @IsInt()
   @Type(() => Number)
-  min: number;
+  @IsOptional()
+  min?: number;
 }

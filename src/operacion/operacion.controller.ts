@@ -8,16 +8,16 @@ import {
   Delete,
 } from '@nestjs/common';
 import { OperacionService } from './operacion.service';
-import { CreateOperacionDto } from './dto/create-operacion.dto';
-import { UpdateOperacionDto } from './dto/update-operacion.dto';
+import { CreateTransactionDTO } from './dto/create-operacion.dto';
+import { UpdateTransactionDto } from './dto/update-operacion.dto';
 
 @Controller('operacion')
 export class OperacionController {
   constructor(private readonly operacionService: OperacionService) {}
 
   @Post()
-  create(@Body() createOperacionDto: CreateOperacionDto) {
-    return this.operacionService.create(createOperacionDto);
+  create(@Body() createTransactionDTO: CreateTransactionDTO) {
+    return this.operacionService.create(createTransactionDTO);
   }
 
   @Get()
@@ -33,9 +33,9 @@ export class OperacionController {
   @Patch(':id')
   update(
     @Param('id') id: string,
-    @Body() updateOperacionDto: UpdateOperacionDto,
+    @Body() updateTransactionDto: UpdateTransactionDto,
   ) {
-    return this.operacionService.update(id, updateOperacionDto);
+    return this.operacionService.update(id, updateTransactionDto);
   }
 
   @Delete(':id')
